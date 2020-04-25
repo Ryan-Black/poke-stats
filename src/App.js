@@ -1,25 +1,43 @@
-import React from 'react';
-import logo from './logo.svg';
+import React, { useState, useEffect } from 'react';
+import { BrowserRouter as Router, Route, Switch } from 'react-router-dom';
 import './App.css';
+import { getPokemon, getAllPokemon } from './api';
+import Navbar from './components/Navbar';
+import PokeCard from './components/PokeCard';
 
 function App() {
+  const [pokemonData, setPokemonData] = useState([]);
+  const initialURL = 'https://pokeapi.co/api/v2/pokemon?offset=0&limit=151';
+
+  useEffect(() => {
+    async function fetchData() {
+      let res = await getAllPokemon(initialURL);
+      await loadPokemon(res.results);
+    }
+    fetchData();
+  }, []);
+
+  const loadPokemon = async (data) => {
+    let _pokemonData = await Promise.all(
+      data.map(async (pokemon) => {
+        let pokemonRecord = await getPokemon(pokemon);
+        return pokemonRecord;
+      })
+    );
+    setPokemonData(_pokemonData);
+  };
+
   return (
-    <div className="App">
-      <header className="App-header">
-        <img src={logo} className="App-logo" alt="logo" />
-        <p>
-          Edit <code>src/App.js</code> and save to reload.
-        </p>
-        <a
-          className="App-link"
-          href="https://reactjs.org"
-          target="_blank"
-          rel="noopener noreferrer"
-        >
-          Learn React
-        </a>
-      </header>
-    </div>
+    <Router>
+      <div className="App">
+        <Navbar />
+        <div className="grid-container">
+          {pokemonData.map((pokemon, i) => {
+            return <PokeCard key={i} pokemon={pokemon} />;
+          })}
+        </div>
+      </div>
+    </Router>
   );
 }
 
