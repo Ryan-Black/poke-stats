@@ -2,13 +2,15 @@ import React from 'react';
 import typeColors from '../helpers/colors';
 
 const PokeCard = ({ pokemon }) => {
+  const main_types = Object.keys(typeColors);
+  const poke_types = pokemon.types.map((type) => type.type.name);
+  const type = main_types.find((type) => poke_types.indexOf(type) > -1);
+
   return (
     <figure
       className="card"
       style={{
-        background: `linear-gradient(120deg, ${
-          typeColors[pokemon.types[0].type.name]
-        } 0%, rgba(0, 0, 0, 0.9) 100%)`,
+        background: `linear-gradient(120deg, ${typeColors[type]} 0%, rgba(0, 0, 0, 0.9) 100%)`,
       }}
     >
       <div className="card-img-container">
@@ -22,11 +24,10 @@ const PokeCard = ({ pokemon }) => {
         <h3
           class="card-type"
           style={{
-            backgroundColor: typeColors[pokemon.types[0].type.name],
+            backgroundColor: typeColors[type],
           }}
         >
-          {pokemon.types[0].type.name.charAt(0).toUpperCase() +
-            pokemon.types[0].type.name.slice(1)}
+          {type.charAt(0).toUpperCase() + type.slice(1)}
         </h3>
 
         <table className="card-stats">
